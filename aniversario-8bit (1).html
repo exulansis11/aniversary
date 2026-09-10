@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PARABÉNS 26 ANOS ❤</title>
+<style>
+  @font-face {
+    font-family: 'PixelFallback';
+    src: local('Courier New');
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #0f0f1e;
+    font-family: 'pixelfont', 'PixelFallback', monospace;
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+  #wrap {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: #0f0f1e;
+  }
+  #gameContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 960px;
+    max-height: 640px;
+    aspect-ratio: 16/10;
+    background: #1a1a2e;
+    border: 4px solid #3a3a5c;
+    box-shadow: 0 0 0 4px #0f0f1e, 0 0 40px rgba(255,105,180,0.25);
+    overflow: hidden;
+  }
+  canvas { display:block; width:100%; height:100%; image-rendering: pixelated; }
+
+  .pixel-text {
+    font-family: 'pixelfont', monospace;
+    letter-spacing: 1px;
+    image-rendering: pixelated;
+  }
+
+  /* ---- overlays ---- */
+  .overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; color: #fff;
+    background: rgba(10,10,25,0.92);
+    padding: 4% 6%;
+    z-index: 20;
+  }
+  .hidden { display: none !important; }
+
+  .title-main {
+    font-size: clamp(18px, 4.2vw, 40px);
+    color: #ffd166;
+    text-shadow: 3px 3px 0 #d1495b, -2px -2px 0 #06d6a0;
+    margin-bottom: 14px;
+    line-height: 1.6;
+    animation: bob 1.4s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }
+
+  .subtitle { font-size: clamp(9px, 1.6vw, 14px); color: #8ecae6; margin-bottom: 30px; line-height: 1.9;}
+
+  .blink { animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn8 {
+    font-family: 'pixelfont', monospace;
+    background: #d1495b;
+    color: #fff;
+    border: none;
+    padding: 14px 26px;
+    font-size: clamp(9px, 1.5vw, 14px);
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #6a1b2a, -2px 0 0 #ff7a8a inset;
+    letter-spacing: 1px;
+    margin-top: 6px;
+  }
+  .btn8:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #6a1b2a; }
+
+  .dialog-box {
+    position: absolute;
+    left: 4%; right: 4%; bottom: 5%;
+    background: #0f0f1e;
+    border: 3px solid #ffd166;
+    padding: 14px 18px;
+    color: #fff;
+    font-size: clamp(9px, 1.6vw, 15px);
+    line-height: 1.8;
+    box-shadow: 0 0 0 3px #0f0f1e, 0 6px 0 rgba(0,0,0,0.4);
+    z-index: 15;
+    min-height: 18%;
+  }
+  .dialog-name {
+    color: #06d6a0;
+    font-size: clamp(8px, 1.3vw, 12px);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .dialog-prompt {
+    position: absolute; right: 14px; bottom: 10px;
+    font-size: 14px; color: #ffd166;
+  }
+
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: clamp(8px, 1.4vw, 12px);
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 2px 2px 0 #000;
+  }
+  #hud .hearts { color: #ff6b9d; }
+  #hud .progress-outer {
+    width: 40%;
+    height: 10px;
+    background: #1a1a2e;
+    border: 2px solid #fff;
+  }
+  #hud .progress-inner {
+    height: 100%;
+    background: linear-gradient(90deg,#06d6a0,#ffd166);
+    width: 0%;
+  }
+
+  /* touch controls */
+  #controls {
+    position: absolute; bottom: 12px; left: 0; right: 0;
+    display: flex; justify-content: space-between; padding: 0 14px;
+    z-index: 25; pointer-events: none;
+  }
+  #controls.hidden-controls { display: none; }
+  .ctrl-group { display: flex; gap: 8px; pointer-events: all; }
+  .ctrl-btn {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.14);
+    border: 2px solid rgba(255,255,255,0.5);
+    color: #fff;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .ctrl-btn:active { background: rgba(255,255,255,0.35); }
+
+  #muteBtn {
+    position: absolute; top: 10px; right: 10px;
+    z-index: 30; background: rgba(0,0,0,0.4); color: #fff; border: 2px solid #fff;
+    width: 34px; height: 34px; font-size: 14px; cursor: pointer;
+  }
+
+  #skipBtn {
+    position:absolute; top:10px; left:10px; z-index:30;
+    background: rgba(0,0,0,0.4); color:#ffd166; border: 2px solid #ffd166;
+    font-size: 9px; padding: 6px 8px; cursor:pointer; font-family: inherit;
+  }
+
+  .hint { font-size: clamp(7px, 1.2vw, 10px); color: #6b7280; margin-top: 24px; }
+
+  .heart-final { color: #ff6b9d; }
+
+  #endingText {
+    font-size: clamp(9px, 1.7vw, 15px);
+    line-height: 2.1;
+    max-width: 640px;
+    color: #f1faee;
+  }
+
+  /* couple pixel canvases on overlays */
+  .couple-canvas {
+    image-rendering: pixelated;
+    width: min(56vw, 210px);
+    height: auto;
+    margin: 4px auto 10px auto;
+    display: block;
+  }
+
+  /* level card */
+  #levelCard {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    background: rgba(10,10,25,0.9);
+    z-index: 22;
+  }
+  #levelCard h2 {
+    font-size: clamp(22px, 5.4vw, 44px);
+    color: #ffd166;
+    text-shadow: 3px 3px 0 #d1495b, -2px -2px 0 #06d6a0;
+    margin: 0;
+    animation: bob 1.4s ease-in-out infinite;
+    letter-spacing: 2px;
+  }
+  #levelCard p {
+    color: #8ecae6;
+    font-size: clamp(10px, 1.9vw, 16px);
+    margin-top: 14px;
+    letter-spacing: 2px;
+  }
+
+  #endingScreen {
+    background: rgba(12,8,24,0.85);
+    justify-content: flex-start;
+    padding-top: 4%;
+    overflow-y: auto;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+<div id="gameContainer">
+
+  <div id="hud" class="hidden">
+    <div class="hearts" id="heartCount">♥ x 0</div>
+    <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+    <div id="stageLabel">FASE 1/5</div>
+  </div>
+
+  <button id="muteBtn" class="hidden">♪</button>
+  <button id="skipBtn" class="hidden">PULAR ▶</button>
+
+  <canvas id="game"></canvas>
+
+  <div class="dialog-box hidden" id="dialogBox">
+    <span class="dialog-name" id="dialogName">MEMÓRIA</span>
+    <span id="dialogText"></span>
+    <span class="dialog-prompt blink">▼</span>
+  </div>
+
+  <div id="controls" class="hidden-controls">
+    <div class="ctrl-group">
+      <div class="ctrl-btn" id="btnLeft">◀</div>
+      <div class="ctrl-btn" id="btnRight">▶</div>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-btn" id="btnAction">●</div>
+      <div class="ctrl-btn" id="btnJump">▲</div>
+    </div>
+  </div>
+
+  <!-- TITLE SCREEN -->
+  <div class="overlay" id="titleScreen">
+    <canvas id="titleCouple" class="couple-canvas" width="120" height="56"></canvas>
+    <div class="title-main">FELIZ<br>ANIVERSÁRIO</div>
+    <div class="subtitle">UMA AVENTURA 8-BIT PELOS 26 ANOS<br>DA MINHA PRINCESA ♥<br>5 ANOS DE CO-OP (RUMO AO 6°!)</div>
+    <button class="btn8" id="startBtn">▶ START</button>
+    <div class="hint">use as setas / A D para andar, ESPAÇO para pular e interagir<br>ou os botões na tela no celular</div>
+  </div>
+
+  <!-- LEVEL CARD -->
+  <div id="levelCard" class="hidden">
+    <h2 id="cardTitle">FASE 1</h2>
+    <p id="cardSub">O ENCONTRO</p>
+  </div>
+
+  <!-- ENDING SCREEN -->
+  <div class="overlay hidden" id="endingScreen">
+    <div class="title-main" style="font-size:clamp(14px,3vw,26px)">PARABÉNS<br>PELOS SEUS 26 ANOS</div>
+    <canvas id="endingCouple" class="couple-canvas" width="120" height="56"></canvas>
+    <div id="endingText"></div>
+    <button class="btn8 hidden" id="replayBtn">♥ JOGAR DE NOVO ♥</button>
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ CANVAS SETUP ============ */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const CW = 320, CH = 200; // internal low-res for pixel look
+canvas.width = CW; canvas.height = CH;
+ctx.imageSmoothingEnabled = false;
+
+function resize(){
+  const container = document.getElementById('gameContainer');
+  const rect = container.getBoundingClientRect();
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ============ PIXEL HELPERS ============ */
+function P(g,x,y,w,h,c){ g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),w,h); }
+
+function drawHeart(g,x,y,c,m){
+  m = m || 1;
+  g.fillStyle = c;
+  g.fillRect(Math.round(x-3*m), Math.round(y-2*m), 2*m, 2*m);
+  g.fillRect(Math.round(x+1*m), Math.round(y-2*m), 2*m, 2*m);
+  g.fillRect(Math.round(x-4*m), Math.round(y-1*m), 8*m, 2*m);
+  g.fillRect(Math.round(x-3*m), Math.round(y+1*m), 6*m, 1*m);
+  g.fillRect(Math.round(x-2*m), Math.round(y+2*m), 4*m, 1*m);
+  g.fillRect(Math.round(x-1*m), Math.round(y+3*m), 2*m, 1*m);
+}
+
+function lerpColor(a,b,t){
+  const pa = hexToRgb(a), pb = hexToRgb(b);
+  const r = Math.round(pa.r + (pb.r-pa.r)*t);
+  const g = Math.round(pa.g + (pb.g-pa.g)*t);
+  const bl = Math.round(pa.b + (pb.b-pa.b)*t);
+  return 'rgb('+r+','+g+','+bl+')';
+}
+function hexToRgb(hex){
+  const v = parseInt(hex.slice(1),16);
+  return {r:(v>>16)&255, g:(v>>8)&255, b:v&255};
+}
+
+/* ============ AUDIO (procedural 8-bit) ============ */
+let audioCtx = null;
+let musicOn = true;
+let musicTimer = null;
+let melIdx = 0;
+let currentMel = null;
+
+function ensureAudio(){
+  if (!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function beep(freq, dur, type, vol, delay){
+  if (!musicOn || !audioCtx) return;
+  const t0 = audioCtx.currentTime + (delay||0);
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type || 'square';
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(vol||0.06, t0+0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.02);
+}
+
+function sfxJump(){ beep(520,0.09,'square',0.05); beep(780,0.09,'square',0.04,0.05); }
+function sfxCollect(){ beep(880,0.08,'square',0.06); beep(1320,0.1,'square',0.05,0.06); }
+function sfxCheckpoint(){ beep(660,0.12,'triangle',0.07); beep(880,0.12,'triangle',0.06,0.1); beep(1100,0.18,'triangle',0.06,0.2); }
+function sfxPrincess(){ beep(660,0.1,'triangle',0.06); beep(880,0.1,'triangle',0.06,0.09); beep(1100,0.16,'triangle',0.06,0.18); }
+function sfxCandle(){ beep(300+Math.random()*200,0.07,'square',0.05); }
+function sfxStomp(){ beep(220,0.08,'square',0.06); beep(140,0.1,'square',0.05,0.05); }
+function sfxBump(){ beep(120,0.07,'square',0.04); }
+function sfxFanfare(){
+  const notes=[523,659,784,1046,784,1046,1318];
+  notes.forEach((n,i)=>beep(n,0.22,'square',0.06,i*0.16));
+}
+
+/* one chiptune loop per level */
+const MELODIES = [
+  { step:165, notes:[523,0,659,0,784,0,659,0, 698,0,880,0,1046,0,880,0] },
+  { step:180, notes:[659,0,0,523,0,0,587,0,0,494,0,0,392,0,440,0] },
+  { step:170, notes:[440,0,523,0,659,0,523,0, 587,0,494,0,440,0,392,0] },
+  { step:215, notes:[330,0,0,392,0,0,440,0,0,349,0,0,392,0,0,294] },
+  { step:150, notes:[523,659,784,1046,784,659,523,659, 784,1046,1318,1046,784,659,523,0] }
+];
+
+function startMusic(i){
+  ensureAudio();
+  stopMusic();
+  currentMel = MELODIES[i % MELODIES.length];
+  melIdx = 0;
+  musicTimer = setInterval(()=>{
+    if (!currentMel) return;
+    const notes = currentMel.notes;
+    const note = notes[melIdx % notes.length];
+    if (note) beep(note, 0.14, 'square', 0.035);
+    if (melIdx % 4 === 0) beep(note ? note/2 : 196, 0.14, 'triangle', 0.02);
+    melIdx++;
+  }, currentMel.step);
+}
+function stopMusic(){ if (musicTimer){ clearInterval(musicTimer); musicTimer = null; } }
+
+/* Happy Birthday chiptune for the candles */
+const BD_SONG = [
+  [392,0.5],[392,0.5],[440,1],[392,1],[523,1],[494,2],
+  [392,0.5],[392,0.5],[440,1],[392,1],[587,1],[523,2],
+  [392,0.5],[392,0.5],[784,1],[659,1],[523,1],[494,1],[440,2],
+  [698,0.5],[698,0.5],[659,1],[523,1],[587,1],[523,2.5]
+];
+let bdTimer = null;
+function playBirthdaySong(){
+  stopBirthdaySong(); stopMusic();
+  let idx = 0;
+  const BEAT = 260;
+  function next(){
+    if (idx >= BD_SONG.length){ idx = 0; bdTimer = setTimeout(next, 900); return; }
+    const pair = BD_SONG[idx++];
+    if (musicOn) beep(pair[0], Math.min(0.6, pair[1]*0.24), 'square', 0.05);
+    bdTimer = setTimeout(next, pair[1]*BEAT);
+  }
+  next();
+}
+function stopBirthdaySong(){ if (bdTimer){ clearTimeout(bdTimer); bdTimer = null; } }
+
+document.getElementById('muteBtn').addEventListener('click', ()=>{
+  musicOn = !musicOn;
+  document.getElementById('muteBtn').textContent = musicOn ? '♪' : '✕';
+});
+
+/* ============ LEVEL DATA ============ */
+const GROUND_Y = 150;
+const TOTAL_LEVELS = 5;
+
+const LEVELS = [
+  { /* FASE 1 - O ENCONTRO */
+    card: 'FASE 1', cardSub: 'O ENCONTRO',
+    length: 2000,
+    skyTop: '#2a6db5', skyBot: '#8fd0ff',
+    ground: '#2a9d5c', groundDk: '#1c7a45', dirt: '#4b2e1e',
+    decor: 'univ',
+    signs: [
+      { x: 400, text: 'Foi aqui que tudo começou: corredores de universidade, cadernos abertos, cafés compartilhados e um sorriso que mudou a minha vida para sempre.' },
+      { x: 950, text: 'Eu fingia que estudava, mas só conseguia pensar em você. A melhor nota que a vida me deu foi o seu sim.' }
+    ],
+    enemies: [ {x:700, range:90}, {x:1450, range:110} ],
+    platforms: [ {x:520, y:112, w:42}, {x:1250, y:106, w:46} ],
+    princessX: 1940,
+    dialog: { name: '♥ EU ♥', text: 'Nos conhecemos na universidade e, desde o primeiro dia, eu soube que minha vida teria muito mais cor com você nela. Primeira fase concluída — e eu escolheria começar de novo com você, todos os dias.' }
+  },
+  { /* FASE 2 - AS CONQUISTAS */
+    card: 'FASE 2', cardSub: 'AS CONQUISTAS',
+    length: 2100,
+    skyTop: '#6e2a5c', skyBot: '#ff9e6b',
+    ground: '#3e8a4e', groundDk: '#2c6a3a', dirt: '#5c3a24',
+    decor: 'city',
+    signs: [
+      { x: 420, text: 'Cada conquista sua é comemorada aqui dentro como troféu de ouro: sua formatura, suas vitórias, cada realização sua. Eu torço por você na primeira fila, sempre.' },
+      { x: 1150, text: 'Você constrói tudo com garra, brilho e humildade. Ver você brilhar é o meu passatempo favorito no mundo inteiro.' }
+    ],
+    enemies: [ {x:650, range:90}, {x:1350, range:110}, {x:1700, range:90} ],
+    platforms: [ {x:600, y:110, w:44}, {x:1500, y:104, w:48} ],
+    princessX: 2040,
+    dialog: { name: '♥ EU ♥', text: '26 anos de vitórias! Você é a pessoa mais determinada que eu conheço, e cada conquista sua eu vivo como se fosse minha — porque, de certo modo, é. Que a sua vida continue cheia de troféus.' }
+  },
+  { /* FASE 3 - A GUARDIÃ */
+    card: 'FASE 3', cardSub: 'A GUARDIÃ',
+    length: 2100,
+    skyTop: '#0f7a6e', skyBot: '#7fd8c8',
+    ground: '#2a9d5c', groundDk: '#1c7a45', dirt: '#4b2e1e',
+    decor: 'clinic',
+    signs: [
+      { x: 430, text: 'Suas mãos devolvem movimento, esperança e sorrisos. Você não cuida só de corpos: cuida de histórias, de gente, de vidas.' },
+      { x: 1200, text: 'Fisioterapeuta é isso: ciência com coração. E você tem os dois em dose tripla. O mundo fica mais leve onde você chega.' }
+    ],
+    enemies: [ {x:700, range:100}, {x:1100, range:90}, {x:1600, range:110} ],
+    platforms: [ {x:560, y:110, w:44}, {x:1450, y:104, w:48} ],
+    princessX: 2040,
+    dialog: { name: '♥ EU ♥', text: 'Ver você cuidar de pessoas em reabilitação me enche de orgulho todos os dias. Você tem o dom de transformar dor em progresso e cansaço em sorriso. O mundo é mais bonito com você nele.' }
+  },
+  { /* FASE 4 - LADO A LADO */
+    card: 'FASE 4', cardSub: 'LADO A LADO',
+    length: 2200,
+    skyTop: '#0a0a1e', skyBot: '#2a1a4e',
+    ground: '#20523a', groundDk: '#173d2b', dirt: '#2e1e14',
+    decor: 'night',
+    signs: [
+      { x: 400, text: 'O último ano foi a fase mais difícil da nossa história. Mas eu aprendi que, do seu lado, não existe chefe impossível de derrotar.' },
+      { x: 1250, text: 'Nos dias em que eu não tinha força, você virou a minha. Você cuidou de mim como ninguém — obrigado por nunca me soltar.' }
+    ],
+    enemies: [ {x:600, range:80}, {x:950, range:100}, {x:1350, range:90}, {x:1650, range:110}, {x:1900, range:80} ],
+    platforms: [ {x:520, y:112, w:40}, {x:1150, y:106, w:44}, {x:1500, y:104, w:44} ],
+    princessX: 2140,
+    dialog: { name: '♥ EU ♥', text: 'No meu tratamento, você foi enfermeira, nutricionista, psicóloga e anjo — tudo ao mesmo tempo, sem desistir nunca. Se eu estou aqui, inteiro e sorrindo, é porque você não me largou da mão. Esse troféu é seu, princesa.' }
+  },
+  { /* FASE 5 - A GRANDE FESTA */
+    card: 'FASE 5', cardSub: 'A GRANDE FESTA',
+    length: 1400,
+    skyTop: '#5c2a7a', skyBot: '#ff7ab0',
+    ground: '#2a9d5c', groundDk: '#1c7a45', dirt: '#4b2e1e',
+    decor: 'party',
+    signs: [
+      { x: 350, text: 'Missão cumprida: você venceu todas as fases! Mas relaxa — o próximo ano do jogo já está em desenvolvimento, com muito mais conteúdo.' },
+      { x: 800, text: 'Agora vem a parte mais importante do jogo inteiro...' }
+    ],
+    enemies: [],
+    platforms: [ {x:550, y:110, w:44} ],
+    princessX: 1310, /* adjusted at runtime: next to the cake */
+    cakeX: 1330,
+    dialog: { name: '♥ EU ♥', text: 'Chegamos até aqui do jeitinho que a gente faz tudo: lado a lado. Agora fecha os olhos, faz um pedido e sopra essas velinhas. Eu já fiz o meu pedido há 5 anos — e ele se chama VOCÊ.' }
+  }
+];
+
+/* ============ GAME STATE ============ */
+const player = {
+  x: 20, y: GROUND_Y - 16, w: 12, h: 16,
+  vx: 0, vy: 0,
+  onGround: true,
+  facing: 1,
+  animFrame: 0, animTimer: 0
+};
+const GRAVITY = 0.5;
+const MOVE_SPEED = 1.6;
+const JUMP_V = -7.2;
+
+let camX = 0;
+let hearts = 0;
+let levelIdx = 0;
+let gameState = 'title'; // title, card, playing, dialog, candles, ending
+let dialogThen = null;
+
+let collectibles = [], signs = [], enemies = [], platforms = [];
+let clouds = [], flowers = [], balloons = [], fireflies = [], confetti = [];
+let floaties = [], parts = [];
+let princess = { x: 0, met: false };
+let candlesArr = [], blownCount = 0;
+let bumpCd = 0;
+
+function genCollectibles(L){
+  const arr = [];
+  let x = 150;
+  while (x < L.length - 120){
+    arr.push({ x: x, y: GROUND_Y - 30 - (Math.random()*22|0), got:false });
+    x += 85 + (Math.random()*55|0);
+  }
+  (L.platforms||[]).forEach(p=>{
+    arr.push({ x: p.x + p.w/2, y: p.y - 12, got:false });
+  });
+  return arr;
+}
+
+function loadLevel(i){
+  const L = LEVELS[i];
+  levelIdx = i;
+  collectibles = genCollectibles(L);
+  signs = L.signs.map(s=>({ x:s.x, text:s.text, shown:false }));
+  enemies = L.enemies.map(e=>({
+    x: e.x, x1: e.x, x2: e.x + e.range,
+    dir: Math.random()<0.5?-1:1, speed: 0.35 + Math.random()*0.25,
+    dead:false, deadT:0
+  }));
+  platforms = L.platforms.map(p=>({ x:p.x, y:p.y, w:p.w }));
+  princess = { x: L.princessX, met:false, facing:-1 };
+  blownCount = 0;
+  candlesArr = [];
+  if (L.decor === 'party'){
+    candlesArr = buildCandles(L.cakeX, GROUND_Y);
+    princess.x = L.cakeX - 52;
+  }
+  player.x = 20; player.y = GROUND_Y - 16;
+  player.vx = 0; player.vy = 0; player.onGround = true; player.facing = 1;
+  camX = 0;
+  floaties = []; parts = [];
+
+  clouds = [];
+  for (let c=0;c<12;c++) clouds.push({ x: Math.random()*(L.length+200), y: 18+Math.random()*40, s: 0.6+Math.random()*0.8 });
+  flowers = [];
+  for (let f=0;f<40;f++) flowers.push({ x: Math.random()*L.length, color: ['#ff6b9d','#ffd166','#06d6a0','#8ecae6'][Math.floor(Math.random()*4)] });
+  balloons = []; fireflies = []; confetti = [];
+  if (L.decor === 'party'){
+    for (let b=0;b<14;b++) balloons.push({ x: Math.random()*L.length, y: GROUND_Y-20-Math.random()*120, spd: 0.15+Math.random()*0.25, color: ['#ff6b9d','#ffd166','#06d6a0','#8ecae6','#d1495b'][b%5], sway: Math.random()*6.28 });
+  }
+  if (L.decor === 'night'){
+    for (let ff=0;ff<22;ff++) fireflies.push({ x: Math.random()*L.length, y: 40+Math.random()*90, ph: Math.random()*6.28 });
+  }
+  if (L.decor === 'party'){
+    for (let cf=0;cf<30;cf++) confetti.push({ x: Math.random()*L.length, y: Math.random()*CH, vy: 0.2+Math.random()*0.3, color: ['#ff6b9d','#ffd166','#06d6a0','#8ecae6'][cf%4] });
+  }
+
+  document.getElementById('stageLabel').textContent = 'FASE ' + (i+1) + '/' + TOTAL_LEVELS;
+  startMusic(i);
+}
+
+/* ============ SPRITES ============ */
+/* the boyfriend: Black, short hair, beard, tall, forearm tattoo */
+function drawBoy(g, x, y, facing, frame, walking){
+  const skin = '#9c6237', body = '#3a2a1a', beard = '#1a1210';
+  g.save();
+  g.translate(x + 6, 0);
+  g.scale(facing, 1);
+  g.translate(-6, 0);
+  // legs walk cycle
+  P(g,2,y+11,3,5,'#22303c');
+  P(g,7,y+11,3,5,'#22303c');
+  if (walking){
+    P(g,2,y+11,3,frame===0?5:3,'#22303c');
+    P(g,7,y+11,3,frame===0?3:5,'#22303c');
+  }
+  // torso
+  P(g,1,y+5,10,7,body);
+  // arm + tattoo hint on forearm
+  P(g,9,y+6,2,5,skin);
+  P(g,9,y+8,2,1,'#3a6ea5');
+  P(g,9,y+9,1,1,'#3a6ea5');
+  // head
+  P(g,2,y,8,6,skin);
+  // short hair
+  P(g,2,y-1,8,2,'#111111');
+  P(g,1,y,1,2,'#111111');
+  // beard
+  P(g,2,y+3,8,3,beard);
+  P(g,4,y+3,4,1,skin);
+  g.restore();
+}
+
+/* the princess: Black, medium skin, well-defined curls, petite, golden crown, pink dress */
+function drawGirl(g, x, y, facing, frame){
+  const skin = '#a5713f', hair = '#241610', hi = '#4a2c1a';
+  g.save();
+  g.translate(x + 6, 0);
+  g.scale(facing, 1);
+  g.translate(-6, 0);
+  // back curls
+  P(g,1,y+0,10,2,hair);
+  P(g,0,y+2,2,4,hair);
+  P(g,10,y+2,2,4,hair);
+  // defined curl bumps on top
+  P(g,2,y-1,2,2,hair);
+  P(g,6,y-1,2,2,hair);
+  P(g,4,y-2,2,2,hair);
+  P(g,0,y+1,1,1,hi); P(g,11,y+3,1,1,hi);
+  P(g,3,y-1,1,1,hi); P(g,8,y+0,1,1,hi);
+  // crown
+  P(g,4,y-4,4,2,'#ffd166');
+  P(g,4,y-5,1,1,'#ffd166');
+  P(g,7,y-5,1,1,'#ffd166');
+  P(g,5,y-5,1,1,'#ff6b9d');
+  // face
+  P(g,2,y+2,8,4,skin);
+  P(g,4,y+3,1,1,'#1a1210');
+  P(g,7,y+3,1,1,'#1a1210');
+  P(g,3,y+4,1,1,'#c9885e');
+  P(g,8,y+4,1,1,'#c9885e');
+  // torso (pink dress)
+  P(g,3,y+6,6,3,'#ff6b9d');
+  P(g,4,y+6,4,1,'#ffd166'); // necklace line
+  // arms
+  P(g,2,y+6,1,3,skin);
+  P(g,9,y+6,1,3,skin);
+  // skirt with flare
+  P(g,2,y+9,8,2,'#e8558f');
+  P(g,1,y+11,10,1,'#ff6b9d');
+  P(g,1,y+12,10,1,'#ffd166');
+  // legs + shoes
+  P(g,3,y+13,2,1,skin);
+  P(g,7,y+13,2,1,skin);
+  P(g,3,y+14,2,1,'#d1495b');
+  P(g,7,y+14,2,1,'#d1495b');
+  g.restore();
+}
+
+/* ============ INPUT ============ */
+const keys = {left:false,right:false,jump:false,action:false};
+
+window.addEventListener('keydown', (e)=>{
+  if (['ArrowLeft','a','A'].includes(e.key)) keys.left = true;
+  if (['ArrowRight','d','D'].includes(e.key)) keys.right = true;
+  if ([' ','ArrowUp','w','W','Enter'].includes(e.key)){
+    e.preventDefault();
+    if (e.repeat) return;
+    if (gameState === 'playing') keys.jump = true;
+    else handleAction();
+  }
+});
+window.addEventListener('keyup', (e)=>{
+  if (['ArrowLeft','a','A'].includes(e.key)) keys.left = false;
+  if (['ArrowRight','d','D'].includes(e.key)) keys.right = false;
+  if ([' ','ArrowUp','w','W','Enter'].includes(e.key)) { keys.jump = false; keys.action = false; }
+});
+
+function bindHold(id, prop){
+  const el = document.getElementById(id);
+  const down = (e)=>{ keys[prop]=true; e.preventDefault(); };
+  const up = (e)=>{ keys[prop]=false; e.preventDefault(); };
+  el.addEventListener('touchstart', down, {passive:false});
+  el.addEventListener('touchend', up);
+  el.addEventListener('touchcancel', up);
+  el.addEventListener('mousedown', down);
+  el.addEventListener('mouseup', up);
+  el.addEventListener('mouseleave', up);
+}
+bindHold('btnLeft','left');
+bindHold('btnRight','right');
+bindHold('btnJump','jump');
+document.getElementById('btnAction').addEventListener('click', ()=>{ handleAction(); });
+
+if ('ontouchstart' in window) {
+  document.getElementById('controls').classList.remove('hidden-controls');
+}
+
+/* ============ DIALOG SYSTEM ============ */
+const dialogBox = document.getElementById('dialogBox');
+const dialogText = document.getElementById('dialogText');
+const dialogName = document.getElementById('dialogName');
+
+function showDialog(name, text, then){
+  gameState = 'dialog';
+  dialogName.textContent = name;
+  dialogText.textContent = text;
+  dialogBox.classList.remove('hidden');
+  dialogThen = then || null;
+  sfxCheckpoint();
+}
+function closeDialog(){
+  dialogBox.classList.add('hidden');
+  if (dialogThen){ const t = dialogThen; dialogThen = null; t(); }
+  else gameState = 'playing';
+}
+
+function handleAction(){
+  if (gameState === 'dialog') closeDialog();
+  else if (gameState === 'playing') doJump();
+  else if (gameState === 'candles') blowCandles();
+}
+
+/* ============ LEVEL CARD ============ */
+const cardEl = document.getElementById('levelCard');
+let cardTimer = null;
+function showCard(i, cb){
+  const L = LEVELS[i];
+  document.getElementById('cardTitle').textContent = L.card;
+  document.getElementById('cardSub').textContent = L.cardSub;
+  cardEl.classList.remove('hidden');
+  gameState = 'card';
+  if (cardTimer) clearTimeout(cardTimer);
+  cardTimer = setTimeout(()=>{
+    cardEl.classList.add('hidden');
+    if (cb) cb();
+  }, 1900);
+}
+
+/* ============ GAME LOOP ============ */
+function doJump(){
+  if (player.onGround){
+    player.vy = JUMP_V;
+    player.onGround = false;
+    sfxJump();
+  }
+}
+
+function spawnParts(x,y,n,colors){
+  for (let i=0;i<n;i++){
+    parts.push({
+      x: x, y: y,
+      vx: (Math.random()-0.5)*2.2, vy: -1-Math.random()*1.6,
+      life: 26+Math.random()*14, g: 0.08,
+      color: colors[Math.floor(Math.random()*colors.length)]
+    });
+  }
+}
+function addFloaty(x,y,text,color){ floaties.push({x:x,y:y,text:text,life:52,color:color||'#06d6a0'}); }
+
+function updateFx(){
+  parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=p.g; p.life--; });
+  parts = parts.filter(p=>p.life>0);
+  floaties.forEach(f=>{ f.y-=0.3; f.life--; });
+  floaties = floaties.filter(f=>f.life>0);
+}
+
+function update(){
+  if (gameState !== 'playing') { updateFx(); return; }
+  const L = LEVELS[levelIdx];
+
+  if (keys.left){ player.vx = -MOVE_SPEED; player.facing = -1; }
+  else if (keys.right){ player.vx = MOVE_SPEED; player.facing = 1; }
+  else { player.vx = 0; }
+  if (keys.jump) doJump();
+
+  player.x += player.vx;
+  if (player.x < 4) player.x = 4;
+
+  const prevBottom = player.y + player.h;
+  player.vy += GRAVITY;
+  player.y += player.vy;
+
+  player.onGround = false;
+  if (player.y >= GROUND_Y - player.h){
+    player.y = GROUND_Y - player.h;
+    player.vy = 0;
+    player.onGround = true;
+  }
+  // land on platforms (only from above)
+  if (player.vy >= 0){
+    platforms.forEach(p=>{
+      if (prevBottom <= p.y + 1 && player.y + player.h >= p.y &&
+          player.x + player.w > p.x && player.x < p.x + p.w){
+        player.y = p.y - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      }
+    });
+  }
+
+  if (player.vx !== 0){
+    player.animTimer++;
+    if (player.animTimer > 6){ player.animTimer = 0; player.animFrame = (player.animFrame+1)%2; }
+  }
+
+  // camera
+  camX = Math.max(0, player.x - CW/2);
+  camX = Math.min(camX, L.length - CW);
+
+  // collectibles
+  collectibles.forEach(c=>{
+    if (!c.got && Math.abs(c.x - (player.x+player.w/2)) < 10 && Math.abs((c.y+6) - (player.y+player.h/2)) < 14){
+      c.got = true; hearts++; sfxCollect();
+      spawnParts(c.x, c.y, 4, ['#ff6b9d','#ffd166']);
+      document.getElementById('heartCount').textContent = '♥ x ' + hearts;
+    }
+  });
+
+  // signs
+  signs.forEach(s=>{
+    if (!s.shown && player.x + player.w/2 >= s.x){
+      s.shown = true;
+      showDialog('LEMBRANÇA ♥', s.text);
+    }
+  });
+
+  // enemies
+  if (bumpCd > 0) bumpCd--;
+  enemies.forEach(e=>{
+    if (e.dead){ if (e.deadT>0) e.deadT--; return; }
+    e.x += e.dir * e.speed;
+    if (e.x > e.x2){ e.x = e.x2; e.dir = -1; }
+    if (e.x < e.x1){ e.x = e.x1; e.dir = 1; }
+    const ey = GROUND_Y - 7;
+    const overlap = player.x < e.x + 10 && player.x + player.w > e.x && player.y + player.h > ey + 2;
+    if (overlap){
+      if (player.vy > 0 && (player.y + player.h) - ey < 6){
+        // stomped! superação!
+        e.dead = true; e.deadT = 24;
+        player.vy = -4.5;
+        hearts += 2; sfxStomp();
+        spawnParts(e.x+5, ey+2, 7, ['#06d6a0','#ffd166','#ff6b9d']);
+        addFloaty(e.x+5, ey-6, 'SUPEROU! +♥');
+        document.getElementById('heartCount').textContent = '♥ x ' + hearts;
+      } else if (bumpCd <= 0){
+        player.x += (player.x + player.w/2 < e.x + 5) ? -3 : 3;
+        bumpCd = 24;
+        sfxBump();
+      }
+    }
+  });
+
+  // princess
+  if (!princess.met && player.x + player.w/2 >= princess.x - 4){
+    princess.met = true;
+    meetPrincess();
+  }
+
+  // progress bar
+  const pct = Math.min(100, (player.x / L.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  updateFx();
+}
+
+function meetPrincess(){
+  const L = LEVELS[levelIdx];
+  gameState = 'dialog';
+  sfxPrincess();
+  spawnParts(princess.x+6, GROUND_Y-20, 12, ['#ff6b9d','#ffd166','#fff']);
+  showDialog(L.dialog.name, L.dialog.text, ()=>{
+    if (levelIdx < TOTAL_LEVELS - 1) nextLevel();
+    else startCandles();
+  });
+}
+
+function nextLevel(){
+  loadLevel(levelIdx + 1);
+  showCard(levelIdx, ()=>{ gameState = 'playing'; });
+}
+
+/* ============ RENDER ============ */
+function drawBackground(){
+  const L = LEVELS[levelIdx];
+  const grad = ctx.createLinearGradient(0,0,0,GROUND_Y);
+  grad.addColorStop(0, L.skyTop);
+  grad.addColorStop(1, L.skyBot);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,CW,GROUND_Y);
+
+  const night = L.decor === 'night';
+  const party = L.decor === 'party';
+
+  // stars
+  if (night || party){
+    ctx.fillStyle = night ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)';
+    for (let i=0;i<40;i++){
+      const sx = (i*97 + 31) % (L.length);
+      const sy = (i*53) % (GROUND_Y-30);
+      const px2 = sx - camX*0.3;
+      if (px2 > -2 && px2 < CW+2) ctx.fillRect(Math.round(px2), sy, 1, 1);
+    }
+  }
+
+  // moon (night)
+  if (night){
+    ctx.fillStyle = '#f1faee';
+    ctx.beginPath(); ctx.arc(260, 34, 11, 0, 6.29); ctx.fill();
+    ctx.fillStyle = L.skyTop;
+    ctx.beginPath(); ctx.arc(265, 31, 9, 0, 6.29); ctx.fill();
+  }
+
+  // sun on the horizon (sunset city)
+  if (L.decor === 'city'){
+    const sunx = CW*0.72 - (camX*0.15)%60;
+    ctx.fillStyle = 'rgba(255,209,102,0.85)';
+    ctx.beginPath();
+    ctx.arc(sunx, GROUND_Y-14, 18, Math.PI, 0);
+    ctx.fill();
+    ctx.fillRect(sunx-18, GROUND_Y-15, 36, 2);
+  }
+
+  // clouds
+  clouds.forEach(c=>{
+    const sx = c.x - camX*0.5;
+    if (sx > -30 && sx < CW+30){
+      ctx.fillStyle = night ? 'rgba(120,120,180,0.3)' : 'rgba(255,255,255,0.75)';
+      const cw = 18*c.s, ch = 7*c.s;
+      ctx.fillRect(sx, c.y, cw, ch);
+      ctx.fillRect(sx+cw*0.25, c.y-ch*0.6, cw*0.6, ch*0.6);
+    }
+  });
+
+  drawDecor(L);
+
+  // balloons + confetti (party)
+  if (party){
+    balloons.forEach(b=>{
+      b.y -= b.spd;
+      if (b.y < 6){ b.y = GROUND_Y+10; b.x = Math.random()*L.length; }
+      const sx = b.x - camX + Math.sin(Date.now()/600 + b.sway)*3;
+      if (sx > -8 && sx < CW+8){
+        P(ctx, sx, b.y, 5, 7, b.color);
+        P(ctx, sx+1, b.y-1, 3, 1, b.color);
+        P(ctx, sx+2, b.y+7, 1, 5, '#f1faee');
+      }
+    });
+    confetti.forEach(cf=>{
+      cf.y += cf.vy;
+      if (cf.y > GROUND_Y){ cf.y = 0; cf.x = Math.random()*L.length; }
+      const sx = cf.x - camX*0.9;
+      if (sx > -3 && sx < CW+3) P(ctx, sx, cf.y, 2, 2, cf.color);
+    });
+  }
+
+  // fireflies (night)
+  if (night){
+    fireflies.forEach(ff=>{
+      ff.ph += 0.03;
+      const sx = ff.x - camX*0.9 + Math.sin(ff.ph)*6;
+      const sy = ff.y + Math.cos(ff.ph*0.7)*4;
+      if (sx > -4 && sx < CW+4){
+        ctx.fillStyle = 'rgba(255,230,109,0.25)';
+        ctx.fillRect(Math.round(sx)-1, Math.round(sy)-1, 3, 3);
+        ctx.fillStyle = '#ffe66d';
+        ctx.fillRect(Math.round(sx), Math.round(sy), 1, 1);
+      }
+    });
+  }
+
+  // ground
+  P(ctx, 0, GROUND_Y, CW, CH-GROUND_Y, L.ground);
+  ctx.fillStyle = L.groundDk;
+  for (let gx = -((camX)%16); gx < CW; gx+=16){
+    ctx.fillRect(Math.round(gx), GROUND_Y, 8, 4);
+  }
+  P(ctx, 0, GROUND_Y+10, CW, CH-GROUND_Y-10, L.dirt);
+
+  // flowers
+  flowers.forEach(f=>{
+    const sx = f.x - camX;
+    if (sx > -4 && sx < CW+4){
+      P(ctx, sx, GROUND_Y-3, 2, 2, f.color);
+      P(ctx, sx, GROUND_Y-1, 1, 3, L.groundDk);
+    }
+  });
+}
+
+function drawDecor(L){
+  const off = camX*0.6;
+  if (L.decor === 'univ' || L.decor === 'city' || L.decor === 'clinic'){
+    const base = L.decor==='univ' ? 'rgba(20,20,50,0.6)' : (L.decor==='city' ? 'rgba(60,20,50,0.55)' : 'rgba(240,250,250,0.85)');
+    for (let i=0;i<24;i++){
+      const bx = i*160 - off%160 - 160;
+      const bh = 30 + (i%3)*14;
+      ctx.fillStyle = base;
+      ctx.fillRect(bx, GROUND_Y-bh, 40, bh);
+      ctx.fillStyle = L.decor==='clinic' ? 'rgba(15,122,110,0.5)' : 'rgba(255,209,102,0.25)';
+      for (let wy=0; wy<bh-8; wy+=12){
+        ctx.fillRect(bx+6, GROUND_Y-bh+wy+4, 5, 5);
+        ctx.fillRect(bx+22, GROUND_Y-bh+wy+4, 5, 5);
+      }
+      if (L.decor === 'clinic' && i%3===0){
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(bx+15, GROUND_Y-bh+2, 10, 3);
+        ctx.fillRect(bx+18, GROUND_Y-bh-1, 3, 9);
+      }
+      if (L.decor === 'univ' && i%2===0){
+        ctx.fillStyle = '#d1495b';
+        ctx.fillRect(bx+8, GROUND_Y-bh-8, 1, 8);
+        ctx.fillRect(bx+9, GROUND_Y-bh-8, 8, 5);
+      }
+    }
+  } else if (L.decor === 'night'){
+    for (let i=0;i<20;i++){
+      const tx = i*140 - off%140 - 140;
+      ctx.fillStyle = 'rgba(10,10,20,0.85)';
+      ctx.fillRect(tx, GROUND_Y-22, 3, 22);
+      ctx.fillRect(tx-6, GROUND_Y-16, 7, 2);
+      ctx.fillRect(tx+3, GROUND_Y-19, 7, 2);
+      ctx.fillRect(tx-4, GROUND_Y-12, 5, 2);
+    }
+  } else if (L.decor === 'party'){
+    const colors = ['#ff6b9d','#ffd166','#06d6a0','#8ecae6'];
+    for (let i=0;i<30;i++){
+      const fx = i*34 - off%34 - 34;
+      ctx.fillStyle = colors[i%4];
+      ctx.fillRect(fx, 10 + (i%2)*4, 4, 5);
+    }
+  }
+}
+
+function drawPlatforms(){
+  platforms.forEach(p=>{
+    const sx = p.x - camX;
+    if (sx < -60 || sx > CW+60) return;
+    P(ctx, sx, p.y, p.w, 6, '#8a5a3a');
+    P(ctx, sx, p.y, p.w, 2, '#b07a4a');
+    for (let bx = sx+3; bx < sx+p.w-3; bx+=8) P(ctx, bx, p.y+3, 2, 2, '#5c3a24');
+  });
+}
+
+function drawSigns(){
+  signs.forEach(s=>{
+    const sx = s.x - camX;
+    if (sx < -20 || sx > CW+20) return;
+    P(ctx, sx, GROUND_Y-16, 2, 16, '#8b5a2b');
+    P(ctx, sx-6, GROUND_Y-25, 14, 10, s.shown ? '#7c5a34' : '#a06a38');
+    P(ctx, sx-6, GROUND_Y-25, 14, 1, '#c9955c');
+    drawHeart(ctx, sx+1, GROUND_Y-21, s.shown ? '#06d6a0' : '#ffd166');
+  });
+}
+
+function drawPrincess(){
+  const sx = princess.x - camX;
+  if (sx < -20 || sx > CW+20) return;
+  const bob = Math.round(Math.sin(Date.now()/240));
+  drawGirl(ctx, sx, GROUND_Y-15+bob, princess.facing || -1, 0);
+  if (!princess.met){
+    drawHeart(ctx, sx+5, GROUND_Y-24+bob+Math.round(Math.sin(Date.now()/180)*1.5), '#ff6b9d');
+  }
+}
+
+function drawEnemies(){
+  enemies.forEach(e=>{
+    const sx = e.x - camX;
+    if (sx < -16 || sx > CW+16) return;
+    if (e.dead){
+      ctx.globalAlpha = Math.max(0, e.deadT/24);
+      P(ctx, sx, GROUND_Y-2, 10, 2, '#6b5b95');
+      ctx.globalAlpha = 1;
+      return;
+    }
+    const wob = Math.sin(Date.now()/120 + e.x)*0.5;
+    P(ctx, sx, GROUND_Y-7+wob, 10, 6, '#6b5b95');
+    P(ctx, sx+1, GROUND_Y-8+wob, 8, 2, '#6b5b95');
+    P(ctx, sx+2, GROUND_Y-6, 2, 2, '#f1faee');
+    P(ctx, sx+6, GROUND_Y-6, 2, 2, '#f1faee');
+    P(ctx, sx+3, GROUND_Y-6, 1, 1, '#d1495b');
+    P(ctx, sx+6, GROUND_Y-6, 1, 1, '#d1495b');
+    P(ctx, sx+3, GROUND_Y-3, 4, 1, '#3a2a5c');
+    P(ctx, sx+1, GROUND_Y-1, 3, 1, '#4a3a75');
+    P(ctx, sx+6, GROUND_Y-1, 3, 1, '#4a3a75');
+  });
+}
+
+function drawCollectibles(){
+  collectibles.forEach(c=>{
+    if (c.got) return;
+    const sx = c.x - camX;
+    if (sx < -10 || sx > CW+10) return;
+    const bob = Math.sin((Date.now()/200)+c.x)*2;
+    drawHeart(ctx, sx, c.y+bob, '#ff6b9d');
+  });
+}
+
+function drawFloaties(){
+  ctx.font = '7px monospace';
+  floaties.forEach(f=>{
+    const sx = f.x - camX;
+    ctx.globalAlpha = Math.min(1, f.life/20);
+    ctx.fillStyle = '#000';
+    ctx.fillText(f.text, sx+1, f.y+1);
+    ctx.fillStyle = f.color;
+    ctx.fillText(f.text, sx, f.y);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawParts(){
+  parts.forEach(p=>{
+    ctx.globalAlpha = Math.min(1, p.life/16);
+    P(ctx, p.x-camX, p.y, 2, 2, p.color);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawPlayer(){
+  drawBoy(ctx, player.x-camX, player.y, player.facing, player.animFrame, player.vx !== 0 && player.onGround);
+}
+
+/* ============ CAKE + 26 CANDLES ============ */
+function buildCandles(cx, gy){
+  const arr = [];
+  for (let i=0;i<13;i++) arr.push({ x: cx-24+i*4, y: gy-17 });
+  for (let i=0;i<13;i++) arr.push({ x: cx-22+i*4, y: gy-16 });
+  return arr;
+}
+
+function drawCake(cx, gy){
+  P(ctx, cx-40-camX, gy-2, 80, 3, '#f1faee');
+  P(ctx, cx-38-camX, gy+1, 76, 2, '#b8c4d0');
+  P(ctx, cx-36-camX, gy-18, 72, 16, '#f4978e');
+  P(ctx, cx-36-camX, gy-18, 72, 4, '#ffd166');
+  for (let i=0;i<8;i++) P(ctx, cx-32+i*9-camX, gy-14, 2, 3, '#ffd166');
+  for (let i=0;i<6;i++) P(ctx, cx-30+i*12-camX, gy-9, 2, 2, '#8ecae6');
+  P(ctx, cx-36-camX, gy-3, 72, 1, '#e8558f');
+  candlesArr.forEach((c, i)=>{
+    const sx = c.x - camX;
+    P(ctx, sx, c.y-5, 1, 5, i%2 ? '#8ecae6' : '#f1faee');
+    if (i >= blownCount){
+      const fx = Math.round(Math.sin(Date.now()/90 + i*1.7));
+      P(ctx, sx-1+fx, c.y-9, 3, 4, '#ff9e3d');
+      P(ctx, sx+fx, c.y-8, 1, 2, '#ffe66d');
+    }
+  });
+  ctx.fillStyle = '#ffd166';
+  ctx.font = '8px monospace';
+  ctx.fillText('26', cx-6-camX, gy-32);
+}
+
+function startCandles(){
+  gameState = 'candles';
+  stopMusic();
+  const L = LEVELS[levelIdx];
+  player.x = L.cakeX - 58;
+  player.y = GROUND_Y - 16;
+  player.vx = 0; player.vy = 0; player.facing = 1;
+  princess.x = L.cakeX + 46;
+  princess.facing = -1;
+  camX = L.length - CW;
+  blownCount = 0;
+  playBirthdaySong();
+  dialogName.textContent = 'ÚLTIMA MISSÃO';
+  dialogText.textContent = 'Você venceu todas as fases! Agora apague as 26 velinhas do seu bolo: aperte ● (ou ESPAÇO) várias vezes!';
+  dialogBox.classList.remove('hidden');
+}
+
+const BLOW_LINES = ['Isso! Continue...', 'Que sopro lindo!', 'Está quase!', 'Mais um pouquinho!', 'Seu pedido está a caminho...', 'As velinhas estão rendendo!', 'Quase lá, meu amor!'];
+
+function blowCandles(){
+  if (blownCount >= candlesArr.length) return;
+  for (let k=0;k<2 && blownCount<candlesArr.length;k++){
+    const c = candlesArr[blownCount];
+    parts.push({ x: c.x, y: c.y-9, vx: (Math.random()-0.5)*0.3, vy: -0.5, life: 34, g: 0, color: '#cccccc' });
+    blownCount++;
+  }
+  sfxCandle();
+  if (blownCount >= candlesArr.length){
+    dialogText.textContent = 'Todas as 26 velinhas apagadas! Não conte o pedido pra ninguém... mas o meu já foi realizado há 5 anos: VOCÊ. ♥';
+    stopBirthdaySong();
+    setTimeout(()=>{
+      dialogBox.classList.add('hidden');
+      goToEnding();
+    }, 2400);
+  } else {
+    const line = BLOW_LINES[Math.floor(blownCount/2) % BLOW_LINES.length];
+    dialogText.textContent = 'Velinhas apagadas: ' + blownCount + '/26 — ' + line;
+  }
+}
+
+/* ============ ENDING ============ */
+function goToEnding(){
+  gameState = 'ending';
+  sfxFanfare();
+  document.getElementById('hud').classList.add('hidden');
+  document.getElementById('controls').classList.add('hidden-controls');
+  document.getElementById('muteBtn').classList.add('hidden');
+  document.getElementById('skipBtn').classList.add('hidden');
+  document.getElementById('endingText').innerHTML =
+    'Você coletou <span class="heart-final">'+hearts+' corações</span> nessa jornada — e ainda assim é pouco perto de todos os motivos que eu tenho pra te amar.<br><br>'+
+    'Meu amor, celebrar os seus <strong style="color:#ffd166">26 anos</strong> é celebrar a mulher incrível que você se tornou: forte, inteligente, guerreira, e com o dom raro de cuidar de todo mundo ao seu redor — inclusive de mim, principalmente no último ano.<br><br>'+
+    'A sua vida importa — e muito: para cada paciente que volta a sorrir com as suas mãos, para cada pessoa que você abraça, e para mim, que te escolheria em todas as vidas, em todos os universos, em todos os jogos.<br><br>'+
+    'Obrigado por ser minha dupla há 5 anos. Que venha o 6°, o 16° e o 60° — eu quero continuar jogando esse co-op com você para sempre.<br><br>'+
+    '<strong style="color:#ffd166">Feliz aniversário, princesa.</strong><br>'+
+    'Eu te amo mais do que qualquer highscore seria capaz de mostrar. ❤';
+  document.getElementById('endingScreen').classList.remove('hidden');
+  document.getElementById('replayBtn').classList.remove('hidden');
+  spawnFireworks();
+}
+
+let fwInterval = null;
+function spawnFireworks(){
+  let count = 0;
+  fwInterval = setInterval(()=>{
+    if (count > 24){ clearInterval(fwInterval); return; }
+    count++;
+    burstAt(Math.random()*CW, 12+Math.random()*85);
+    beep(600+Math.random()*400, 0.12, 'triangle', 0.04);
+  }, 280);
+}
+function burstAt(x,y){
+  const colors = ['#ff6b9d','#ffd166','#06d6a0','#8ecae6','#f4978e'];
+  const color = colors[Math.floor(Math.random()*colors.length)];
+  for (let i=0;i<12;i++){
+    const angle = (Math.PI*2)*(i/12);
+    parts.push({ x:x, y:y, vx: Math.cos(angle)*1.5, vy: Math.sin(angle)*1.5, life: 34, g: 0.02, color: color });
+  }
+}
+
+function renderEnding(){
+  const grad = ctx.createLinearGradient(0,0,0,CH);
+  grad.addColorStop(0,'#1a0a2e');
+  grad.addColorStop(1,'#2e0a3e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,CW,CH);
+  parts.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.vy += p.g; p.life--;
+    ctx.globalAlpha = Math.min(1, p.life/16);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
+  });
+  ctx.globalAlpha = 1;
+  parts = parts.filter(p=>p.life>0);
+  // the couple watching the fireworks
+  drawBoy(ctx, 132, GROUND_Y-16+Math.round(Math.sin(Date.now()/300)), 1, 0, false);
+  drawGirl(ctx, 152, GROUND_Y-15+Math.round(Math.cos(Date.now()/300)), -1, 0);
+  drawHeart(ctx, 147, GROUND_Y-30+Math.round(Math.sin(Date.now()/220)*2), '#ff6b9d');
+  P(ctx, 0, GROUND_Y, CW, CH-GROUND_Y, '#173d2b');
+}
+
+function render(){
+  ctx.clearRect(0,0,CW,CH);
+  drawBackground();
+  drawPlatforms();
+  drawSigns();
+  const L = LEVELS[levelIdx];
+  if (L.decor === 'party' && candlesArr.length) drawCake(L.cakeX, GROUND_Y);
+  drawPrincess();
+  drawEnemies();
+  drawCollectibles();
+  drawPlayer();
+  drawParts();
+  drawFloaties();
+}
+
+function loop(){
+  if (gameState === 'playing') update();
+  else if (gameState === 'candles' || gameState === 'dialog') updateFx();
+  if (gameState === 'ending') renderEnding();
+  else render();
+  requestAnimationFrame(loop);
+}
+
+/* ============ COUPLE CANVASES (title & ending) ============ */
+function setupCouple(id){
+  const c = document.getElementById(id);
+  if (!c) return;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  let t = 0;
+  (function draw(){
+    t++;
+    g.clearRect(0,0,120,56);
+    g.fillStyle = 'rgba(255,255,255,0.35)';
+    for (let i=0;i<14;i++){
+      g.fillRect((i*37)%120, (i*23)%30, 1, 1);
+    }
+    P(g, 0, 46, 120, 10, '#2a9d5c');
+    P(g, 0, 50, 120, 6, '#4b2e1e');
+    const bob1 = Math.round(Math.sin(t/26));
+    const bob2 = Math.round(Math.cos(t/26));
+    drawBoy(g, 36, 30+bob1, 1, Math.floor(t/22)%2, true);
+    drawGirl(g, 66, 32+bob2, -1, 0);
+    drawHeart(g, 57, 18+Math.round(Math.sin(t/16)*2), '#ff6b9d', 2);
+    requestAnimationFrame(draw);
+  })();
+}
+setupCouple('titleCouple');
+setupCouple('endingCouple');
+
+/* ============ START / SKIP / REPLAY ============ */
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  ensureAudio();
+  document.getElementById('titleScreen').classList.add('hidden');
+  document.getElementById('hud').classList.remove('hidden');
+  document.getElementById('muteBtn').classList.remove('hidden');
+  document.getElementById('skipBtn').classList.remove('hidden');
+  document.getElementById('heartCount').textContent = '♥ x 0';
+  loadLevel(0);
+  showCard(0, ()=>{ gameState = 'playing'; });
+  loop();
+});
+
+document.getElementById('skipBtn').addEventListener('click', ()=>{
+  if (gameState !== 'playing') return;
+  if (levelIdx < TOTAL_LEVELS - 1){
+    player.x = Math.max(4, princess.x - 8);
+  } else {
+    startCandles();
+  }
+});
+
+document.getElementById('replayBtn').addEventListener('click', ()=>{
+  location.reload();
+});
+
+dialogBox.addEventListener('click', ()=>{ handleAction(); });
+canvas.addEventListener('click', ()=>{
+  if (gameState === 'dialog' || gameState === 'candles') handleAction();
+  else if (gameState === 'playing') doJump();
+});
+
+})();
+</script>
+</body>
+</html>
